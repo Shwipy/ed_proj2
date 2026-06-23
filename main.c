@@ -3,10 +3,10 @@
 #include <string.h>
 #include <time.h>
 
-typedef struct ServiceNode {
-    Service service;
-    struct ServiceNode *next;
-} ServiceNode;
+typedef struct{
+    char compName[50];
+    float compPrice;
+} Component;
 
 typedef struct{
     int id;
@@ -20,14 +20,20 @@ typedef struct{
     float finalPrice;
     int payedFor;
     time_t paymentDate;
+
+    Component components[15];
     int numComponents;
 } Service;
 
+typedef struct ServiceNode {
+    Service service;
+    struct ServiceNode *next;
+} ServiceNode;
 
 typedef struct{
-    char typeCode[20];
+    int id;
     char typeName[30];
-    float price;
+    float basePrice;
     char employee[50];
 
     int cancelled; 
@@ -37,20 +43,152 @@ typedef struct{
 } ServiceType;
 
 
+
+//----------------------------------------------- Utils ------------------------------------------------
+
+//Cria numero aleatorio para ser o id do tipo de serviço
+int createRandomId(ServiceType database[], int numElements){
+    int generatingId = 1, id;
+
+    if (numElements == 100){
+        printf("Max number of elements reached! :o");
+        return 0;
+    }
+
+    do{
+        generatingId = 0;
+        id = (rand() % 100) + 1;
+
+        for (int i = 0; i < numElements; i++){
+
+            if (database[i].id == id){
+                generatingId = 1;
+                break;
+            }
+        }
+
+    } while (generatingId);
+    return id;
+}
+
+//Para verificar se existem Tipos de Serviços
+int serviceTypeFilled (int numServiceTypes){
+    if (numServiceTypes == 0){
+        printf("No Services Types Available\n");
+        return 0;
+    }
+    return 1;
+}
+//----------------------------------------------- List Things -----------------------------------------------
+// Função para visualizar os dados de um tipo de serviço
+void printServiceType(ServiceType servType){
+    
+    printf("[%.3d   %.9s  %.24s  %.2f  %d]", servType.id, servType.typeName, servType.employee, servType.basePrice, servType.cancelled);
+    
+}
+
+//Função para visualisar todos os tipos de serviços eseus dados
+void printServiceTypeList(ServiceType database[], int numServiceTypes){
+    if (serviceTypeFilled(numServiceTypes)){
+        printf("Code   Type     Employee     Price    Cancelled\n");
+        for (int i = 0; i < numServiceTypes; i++){
+            printServiceType(database[i]);
+            printf("\n");
+        }
+    }    
+}
+
+//----------------------------------------------- Funções -----------------------------------------------
+//Adiciona um novo Tipo de Serviço
+ServiceType addServiceType(int id){
+    ServiceType servType;
+
+    servType.id = id;
+    servType.cancelled = 0;
+    
+    printf("Name of the Service Type:");
+    scanf("%s", servType.typeName);
+    fflush(stdin);
+
+    printf("Name of the Employee:");
+    scanf("%s", servType.employee);
+    fflush(stdin);
+
+    printf("Base price of the Service:");
+    scanf("%f", &servType.basePrice);
+    fflush(stdin);
+
+    //catarinaaa!!! ta null pq estão vazio! :o
+    servType.running = NULL;
+    servType.completed = NULL;
+
+    return servType;
+}
+
+//----------------------------------------------- Menus -----------------------------------------------
+//Menu para tratar dos tipos de serviço
+int serviceTypeMenu(ServiceType database[], int numServiceTypes){
+    int running = 1, option, id, verefyId, searchId;
+    ServiceType servType;
+    Component comp;
+
+    do{
+        printf("\nManage Services:\n");
+        printf("1 - Register New Service Type\n");
+        printf("2 - List All Service Types\n");
+        printf("3 - Edit Service Type\n");
+        printf("4 - Finish Service\n");
+        printf("0 - Back\n");
+        printf("What do you want to do:");
+        fflush(stdin);
+        scanf("%d", &option);
+
+        switch (option){
+        case 1:
+            id = createRandomId(database, numServiceTypes);
+            servType = addServiceType(id);
+            database[numServiceTypes] = servType;
+            numServiceTypes++;
+            break;
+
+        case 2:
+            printServiceTypeList(database, numServiceTypes);
+            break;
+
+        case 3:
+
+            break;
+
+        case 4:
+            break;
+
+        case 0:
+            printf("\n");
+            return numServiceTypes;
+
+        default:
+            printf("Incorrect option. Try Again");
+            break;
+        }
+    } while (running);
+}
+
+//----------------------------------------------- Main -----------------------------------------------
+//main cycle do coiso
 int main(){
 
     int  option, running =1;
 
     ServiceType database[100];
-    int numServiceTypes;
+    int numServiceTypes = 0;
 
 
 
     do{
         printf("Menu:\n");
         //É preciso mudar esta merda todaaaaa ;-; 
-        printf("1 - Manage Services\n");
-        printf("2 - Show [Client] Services\n");
+        printf("1 - Manage Service Types\n");
+/*      printf("2 - Show [Client] Services\n");
         printf("3 - Lists service by year\n");
         printf("4 - Update service price\n");
         printf("5 - List incomplet services by type\n");
@@ -60,7 +198,7 @@ int main(){
         printf("9 - Duration about all services\n");
         printf("10 - Duration about all services by type of service\n");
         printf("11 - Lists all services\n"); // só para demonstração
-        printf("12 - Test function CSV\n");
+        printf("12 - Test function CSV\n"); */
         printf("0 - Exit\n");
         printf("What do you want to do:");
         fflush(stdin);
@@ -68,7 +206,8 @@ int main(){
 
         switch (option){
         case 1:
-
+            numServiceTypes = serviceTypeMenu(database, numServiceTypes);
+            printf("%d",numServiceTypes);
             break;
 
         case 2:
