@@ -357,7 +357,8 @@ int serviceTypeMenu(ServiceType database[], int numServiceTypes){
         printf("1 - Register New Service Type\n");
         printf("2 - List All Service Types\n");
         printf("3 - Edit Service Type\n");
-        printf("4 - Finish Service\n");
+        printf("4 - Delete Service Type (forever)\n");
+        printf("5 - Cancel Service Type\n");
         printf("0 - Back\n");
         printf("What do you want to do:");
         fflush(stdin);
@@ -382,6 +383,9 @@ int serviceTypeMenu(ServiceType database[], int numServiceTypes){
 
         case 4:
             break;
+        
+        case 5:
+            break;
 
         case 0:
             printf("\n");
@@ -403,7 +407,12 @@ int serviceMenu(ServiceType database[], int numServiceTypes){
     do{
         printf("\nManage Services:\n");
         printf("1 - Register New Service \n");
-        printf("2 - List Services By Type \n");
+        printf("2 - List Services By Type \n");//depois para passar para outro menu
+        printf("3 - Finish Service \n");
+        printf("4 - Delete Service \n");
+        printf("5 - Add Component \n");
+        printf("2 - Pay for a Service \n");
+
         printf("0 - Back\n");
         printf("What do you want to do:");
         fflush(stdin);
@@ -478,6 +487,131 @@ int serviceMenu(ServiceType database[], int numServiceTypes){
         }
     } while (running);
 }
+//não sei como lhe chamar ahhhhhhhh!!!!
+int alinea3menu(ServiceType database[], int numServiceTypes){
+    int running = 1, option, id, typeId,verefyId, searchId, price=0;
+    Service serv;
+    Component comp;
+
+    do{
+        printf("\nManage Services:\n");
+        printf("1 - List Ongoing Services \n");
+        printf("2 - Number of Ongoing Services \n");
+        printf("3 - List Finished Services \n");
+        printf("4 - Mean Price of Finished Services \n");
+        printf("5 - Time Statistics of Finished Services\n");
+
+        printf("0 - Back\n");
+        printf("What do you want to do:");
+        fflush(stdin);
+        scanf("%d", &option);
+
+        switch (option){    
+        case 1:
+            printf("ID of the type of Service:");
+            scanf("%d", &typeId);
+            fflush(stdin);
+
+            verefyId = serviceTypeExists(database, numServiceTypes, typeId);
+            if (verefyId == -1){
+                printf("Service Type Not Found.\n");
+                break;
+            }
+            
+            if (database[verefyId].running == NULL) {
+                printf("No Repairs of this Type\n");
+            } else {
+                listServicesRunning(database[verefyId]);
+            }
+            break;
+
+
+        case 2:
+            printf("ID of the type of Service:");
+            scanf("%d", &typeId);
+            fflush(stdin);
+
+            verefyId = serviceTypeExists(database, numServiceTypes, typeId);
+            if (verefyId == -1){
+                printf("Service Type Not Found.\n");
+                break;
+            }
+            
+            if (database[verefyId].running == NULL) {
+                printf("No Repairs of this Type\n");
+            } else {
+               countServicesAtMoment(database[verefyId]);
+            }
+            break;
+            
+            break;
+
+        case 3:
+            printf("ID of the type of Service:");
+            scanf("%d", &typeId);
+            fflush(stdin);
+
+            verefyId = serviceTypeExists(database, numServiceTypes, typeId);
+            if (verefyId == -1){
+                printf("Service Type Not Found.\n");
+                break;
+            }
+            
+            if (database[verefyId].completed == NULL) {
+                printf("No Repairs of this Type\n");
+            } else {
+                listFinishedServices(database[verefyId]);
+            }
+            break;
+
+        case 4:
+
+            printf("ID of the type of Service:");
+            scanf("%d", &typeId);
+            fflush(stdin);
+
+            verefyId = serviceTypeExists(database, numServiceTypes, typeId);
+            if (verefyId == -1){
+                printf("Service Type Not Found.\n");
+                break;
+            }
+            
+            if (database[verefyId].completed == NULL) {
+                printf("No Repairs of this Type\n");
+            } else {
+                price = averagePrice(database[verefyId]);
+                printf("%d",averagePrice);
+            }
+            break;
+
+        case 5:
+            printf("ID of the type of Service:");
+            scanf("%d", &typeId);
+            fflush(stdin);
+
+            verefyId = serviceTypeExists(database, numServiceTypes, typeId);
+            if (verefyId == -1){
+                printf("Service Type Not Found.\n");
+                break;
+            }
+            
+            if (database[verefyId].completed == NULL) {
+                printf("No Repairs of this Type\n");
+            } else {
+                durationOfOneService(database[verefyId]);
+            }
+            break;
+
+        case 0:
+            printf("\n");
+            return 0;
+
+        default:
+            printf("Incorrect option. Try Again");
+            break;
+        }
+    } while (running);
+}
 
 //----------------------------------------------- Main -----------------------------------------------
 //main cycle do coiso
@@ -495,10 +629,12 @@ int main(){
         //É preciso mudar esta merda todaaaaa ;-; 
         printf("1 - Manage Service Types\n");
         printf("2 - Manage Services\n");
-/*      printf("3 - Lists service by year\n");
-        printf("4 - Update service price\n");
-        printf("5 - List incomplet services by type\n");
-*/
+        printf("3 - Manage Service by Type\n");
+        printf("4 - Sort Completed Services by Value \n");
+        printf("5 - Time Statistics Related to Completed Services\n");
+        printf("6 - List Cancelled Service Types\n");
+        printf("7 - Sort Types by Number of Ongoing Services\n");
+
         printf("0 - Exit\n");
         printf("What do you want to do:");
         fflush(stdin);
@@ -507,16 +643,33 @@ int main(){
         switch (option){
         case 1:
             numServiceTypes = serviceTypeMenu(database, numServiceTypes);
-            printf("%d",numServiceTypes);
             break;
 
         case 2:
             serviceMenu(database, numServiceTypes);
-            printf("%d",numServiceTypes);
             break;
 
         case 3:
+            //alinea3
+            //new menu
+            alinea3menu(database, numServiceTypes);
 
+            break;
+
+        case 4:
+        //alinea4
+            break;
+
+        case 5:
+        //alinea5
+            break;
+
+        case 6:
+        //alinea6
+            break;
+
+        case 7:
+        //alinea7
             break;
 
         case 0:
