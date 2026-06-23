@@ -42,7 +42,136 @@ typedef struct{
     ServiceNode *completed;
 } ServiceType;
 
+//Requisito 3b
+int countServicesAtMoment(ServiceType st){
+    int count = 0;
+    ServiceNode * current = st.running;
+    while(current != NULL){
+        count++;
+        current = current->next;
 
+    } 
+    return count;
+
+}
+
+//Requisito 3a
+void listServicesRunning(ServiceType st){
+    ServiceNode * current = st.running;
+    while(current != NULL){
+        time_t dateNow = time(NULL);
+        time_t dateStart = current->service.startDateTimestamp;
+        double runTime = difftime(dateNow, dateStart);
+        printf("Services running\n ID: %d\n Client: %s\n Equipment: %s\n Time running: %.2f\n", current->service.id, current->service.client, current->service.equipment, runTime);
+        current = current->next;
+    }
+}
+
+//Requisito 3c
+void listFinishedServices(ServiceType st){
+    ServiceNode * current = st.completed;
+    while(current != NULL){
+        printf("Services completed\n ID: %d\n Client: %s\n Equipment: %s\n", current->service.id, current->service.client, current->service.equipment);
+        current = current->next;
+    }
+}
+//Requisito 3d
+float averagePrice(ServiceType st){
+    ServiceNode * current = st.completed;
+    float sum = 0;
+    int countServices = 0;
+    while(current != NULL){
+        sum += current->service.finalPrice;
+        countServices++;
+        current = current->next;
+    }
+    if(countServices == 0)
+        return 0;
+    else
+        return sum/countServices;
+}
+
+//Requisito 3e
+void durationOfOneService(ServiceType st){
+    ServiceNode * current = st.completed;
+    if(current == NULL){
+        printf("Dont have completed services.\n");
+    }else {
+            double duration;
+            double min;
+            double max;
+            double sum;
+            double avarage;
+            int count = 1;
+
+            duration = difftime(current->service.endDateTimestamp, current->service.startDateTimestamp);
+            min = duration;
+            max = duration;
+            sum = duration;
+
+            current = current->next;
+        
+            while(current != NULL){
+                duration = difftime(current->service.endDateTimestamp, current->service.startDateTimestamp);
+
+                if(duration < min){
+                    min = duration;
+                }
+                if(duration > max){
+                    max = duration;
+                }
+                sum += duration;
+                count++;
+                current = current->next;
+        }
+        avarage = sum/count;
+        printf("The duration of services is:\n The minimum is: %.2f\n The maximum is: %.2f\n The average is: %.2f\n", min, max, avarage);
+    }
+}
+
+//Requisito 5
+void durationOfALLServices(ServiceType database[], int numServiceTypes){
+    ServiceNode * current;
+    int i;
+    double duration;
+    double min;
+    double max;
+    double sum;
+    double avarage;
+    int count = 0;
+    int firstService = 1; //ainda nao encontrei nenhum servico
+
+    for(i = 0; i < numServiceTypes; i++){
+        current = database[i].completed;
+        
+        while(current != NULL){
+            duration = difftime(current->service.endDateTimestamp, current->service.startDateTimestamp);
+            if(firstService == 1){
+                min = duration;
+                max = duration;
+                sum = duration;
+                count = 1;
+                firstService = 0; //encontrei um servico
+            } else {
+                if(duration < min){
+                    min = duration;
+                }
+                if(duration > max){
+                    max = duration;
+                }
+                sum += duration;
+                count++;
+            }
+            current = current->next;
+        }
+    }
+    if(firstService == 1){
+        printf("Dont have completed services.\n");
+    } else {
+        avarage = sum/count;
+        printf("The duration of all services is:\n The minimum is: %.2f\n The maximum is: %.2f\n The average is: %.2f\n", min, max, avarage);
+    }
+}
 
 //----------------------------------------------- Utils ------------------------------------------------
 
