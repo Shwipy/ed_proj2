@@ -132,10 +132,9 @@ void durationOfOneService(ServiceType st) {
             "is: %.2f\n The average is: %.2f\n",
             min, max, avarage);
     }
-    }
-
+}
     // Requisito 5
-    void durationOfALLServices(ServiceType database[], int numServiceTypes) {
+void durationOfALLServices(ServiceType database[], int numServiceTypes) {
     ServiceNodePointer current;
     int i;
     double duration;
@@ -225,11 +224,43 @@ void durationOfOneService(ServiceType st) {
         current = current->next;
         }
     }
-
     if (existService == 0) {
         printf("oh noo... i can't find the service with this id\n");
     }
     }
+
+//Requisito 2e
+void valuePayedForService(ServiceType database[], int numServiceTypes) {
+    int serviceId;
+    printf("Plss enter the id of the service you want to pay\n");
+    scanf("%d", &serviceId);
+    fflush(stdin);
+
+    for (int i = 0; i < numServiceTypes; i++) {
+        ServiceNodePointer current = database[i].completed;
+        while (current != NULL) {
+            if (current->service.id == serviceId) {
+                if(current->service.paidFor == 1) {
+                    printf("You don't have to pay for this service, this service is already payed.\n");
+                } else{
+                    printf("Total price: %.2f\n Doyou want to pay? (1-yes, 0-noooo)\n", current->service.finalPrice);
+                    int anwser;
+                    scanf("%d", &anwser);
+                    fflush(stdin);
+                    if (anwser == 1) {
+                        current->service.paidFor = 1;
+                        current->service.paymentDate = time(NULL);
+                        printf("Success in your payment! :D\n");
+                }
+                }return;
+            
+
+        }
+        current = current->next;
+        }
+    }
+    printf("oh noo... i can't find the service\n");
+}
 
     //----------------------------------------------- Utils
     //------------------------------------------------
@@ -473,7 +504,7 @@ void durationOfOneService(ServiceType st) {
         printf("3 - Finish Service \n");
         printf("4 - Delete Service \n");
         printf("5 - Add Component \n");
-        printf("2 - Pay for a Service \n");
+        printf("6 - Pay for a Service \n");
 
         printf("0 - Back\n");
         printf("What do you want to do:");
@@ -542,6 +573,10 @@ void durationOfOneService(ServiceType st) {
         addComponent(database, numServiceTypes);
         break;
 
+        case 6:
+        valuePayedForService(database, numServiceTypes);
+        break;
+
         case 0:
         printf("\n");
         return 0;
@@ -604,10 +639,9 @@ void durationOfOneService(ServiceType st) {
         if (database[verefyId].running == NULL) {
             printf("No Repairs of this Type\n");
         } else {
-            countServicesAtMoment(database[verefyId]);
-        }
-        break;
+            printf("Number of ongoing services: %d\n", countServicesAtMoment(database[verefyId]));
 
+        }
         break;
 
         case 3:
@@ -644,7 +678,7 @@ void durationOfOneService(ServiceType st) {
             printf("No Repairs of this Type\n");
         } else {
             price = averagePrice(database[verefyId]);
-            printf("%d", averagePrice);
+            printf("%.2f", price);
         }
         break;
 
