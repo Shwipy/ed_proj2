@@ -403,7 +403,7 @@ int serviceMenu(ServiceType database[], int numServiceTypes){
     do{
         printf("\nManage Services:\n");
         printf("1 - Register New Service \n");
-        printf("2 - List All Services \n");
+        printf("2 - List Services By Type \n");
         printf("0 - Back\n");
         printf("What do you want to do:");
         fflush(stdin);
