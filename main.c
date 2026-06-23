@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 
+
 typedef struct {
     char compName[50];
     float compPrice;
