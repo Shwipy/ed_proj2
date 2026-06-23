@@ -24,11 +24,11 @@ typedef struct {
     int numComponents;
 } Service;
 
-typedef struct ServiceNode *ServiceNodePointer;
+typedef struct ServiceNode* ServiceNodePointer;
 
 typedef struct ServiceNode {
     Service service;
-    struct ServiceNode *next;
+    struct ServiceNode* next;
 } ServiceNode;
 
 typedef struct {
@@ -39,8 +39,8 @@ typedef struct {
 
     int cancelled;
 
-    ServiceNode *running;
-    ServiceNode *completed;
+    ServiceNode* running;
+    ServiceNode* completed;
 } ServiceType;
 
 // Requisito 3b
@@ -61,7 +61,7 @@ void listServicesRunning(ServiceType st) {
         time_t dateNow = time(NULL);
         time_t dateStart = current->service.startDateTimestamp;
         double runTime = difftime(dateNow, dateStart);
-        printf("Services running\n ID: %d\n Client: %s\n Equipment: %s\n Time running: %.2f\n", current->service.id, current->service.client,current->service.equipment, runTime);
+        printf("Services running\n ID: %d\n Client: %s\n Equipment: %s\n Time running: %.2f\n", current->service.id, current->service.client, current->service.equipment, runTime);
         current = current->next;
     }
 }
@@ -97,7 +97,8 @@ void durationOfOneService(ServiceType st) {
     ServiceNodePointer current = st.completed;
     if (current == NULL) {
         printf("Dont have completed services.\n");
-    } else {
+    }
+    else {
         double duration;
         double min;
         double max;
@@ -106,7 +107,7 @@ void durationOfOneService(ServiceType st) {
         int count = 1;
 
         duration = difftime(current->service.endDateTimestamp,
-                            current->service.startDateTimestamp);
+            current->service.startDateTimestamp);
         min = duration;
         max = duration;
         sum = duration;
@@ -114,18 +115,18 @@ void durationOfOneService(ServiceType st) {
         current = current->next;
 
         while (current != NULL) {
-        duration = difftime(current->service.endDateTimestamp,
-                            current->service.startDateTimestamp);
+            duration = difftime(current->service.endDateTimestamp,
+                current->service.startDateTimestamp);
 
-        if (duration < min) {
-            min = duration;
-        }
-        if (duration > max) {
-            max = duration;
-        }
-        sum += duration;
-        count++;
-        current = current->next;
+            if (duration < min) {
+                min = duration;
+            }
+            if (duration > max) {
+                max = duration;
+            }
+            sum += duration;
+            count++;
+            current = current->next;
         }
         avarage = sum / count;
         printf("The duration of services is:\n The minimum is: %.2f\n The maximum "
@@ -133,7 +134,7 @@ void durationOfOneService(ServiceType st) {
             min, max, avarage);
     }
 }
-    // Requisito 5
+// Requisito 5
 void durationOfALLServices(ServiceType database[], int numServiceTypes) {
     ServiceNodePointer current;
     int i;
@@ -149,39 +150,41 @@ void durationOfALLServices(ServiceType database[], int numServiceTypes) {
         current = database[i].completed;
 
         while (current != NULL) {
-        duration = difftime(current->service.endDateTimestamp,
-                            current->service.startDateTimestamp);
-        if (firstService == 1) {
-            min = duration;
-            max = duration;
-            sum = duration;
-            count = 1;
-            firstService = 0; // encontrei um servico
-        } else {
-            if (duration < min) {
-            min = duration;
+            duration = difftime(current->service.endDateTimestamp,
+                current->service.startDateTimestamp);
+            if (firstService == 1) {
+                min = duration;
+                max = duration;
+                sum = duration;
+                count = 1;
+                firstService = 0; // encontrei um servico
             }
-            if (duration > max) {
-            max = duration;
+            else {
+                if (duration < min) {
+                    min = duration;
+                }
+                if (duration > max) {
+                    max = duration;
+                }
+                sum += duration;
+                count++;
             }
-            sum += duration;
-            count++;
-        }
-        current = current->next;
+            current = current->next;
         }
     }
     if (firstService == 1) {
         printf("Dont have completed services.\n");
-    } else {
+    }
+    else {
         avarage = sum / count;
         printf("The duration of all services is:\n The minimum is: %.2f\n The "
             "maximum is: %.2f\n The average is: %.2f\n",
             min, max, avarage);
     }
-    }
+}
 
-    // Requisito 2d
-    void addComponent(ServiceType database[], int numServiceTypes) {
+// Requisito 2d
+void addComponent(ServiceType database[], int numServiceTypes) {
     int serviceId;
     int existService = 0;
 
@@ -198,36 +201,36 @@ void durationOfALLServices(ServiceType database[], int numServiceTypes) {
     for (int i = 0; i < numServiceTypes; i++) {
         ServiceNodePointer current = database[i].running;
         while (current != NULL) {
-        if (current->service.id == serviceId) {
-            existService = 1;
-            if (current->service.numComponents >= 15) {
-            printf("ohh noo.. max of components :(");
-            return;
+            if (current->service.id == serviceId) {
+                existService = 1;
+                if (current->service.numComponents >= 15) {
+                    printf("ohh noo.. max of components :(");
+                    return;
+                }
+                Component newComponent;
+                printf("Plss enter the name of the component\n");
+                scanf("%s", newComponent.compName);
+                fflush(stdin);
+                printf("Plss enter the price of the component\n");
+                scanf("%f", &newComponent.compPrice);
+                fflush(stdin);
+
+                // para guardar no sitio certinho!!
+                current->service.components[current->service.numComponents] =
+                    newComponent;
+                current->service.numComponents++;
+
+                current->service.finalPrice += newComponent.compPrice;
+                printf("The new prioce is: %.2f \n", current->service.finalPrice);
+                return;
             }
-            Component newComponent;
-            printf("Plss enter the name of the component\n");
-            scanf("%s", newComponent.compName);
-            fflush(stdin);
-            printf("Plss enter the price of the component\n");
-            scanf("%f", &newComponent.compPrice);
-            fflush(stdin);
-
-            // para guardar no sitio certinho!!
-            current->service.components[current->service.numComponents] =
-                newComponent;
-            current->service.numComponents++;
-
-            current->service.finalPrice += newComponent.compPrice;
-            printf("The new prioce is: %.2f \n", current->service.finalPrice);
-            return;
-        }
-        current = current->next;
+            current = current->next;
         }
     }
     if (existService == 0) {
         printf("oh noo... i can't find the service with this id\n");
     }
-    }
+}
 
 //Requisito 2e
 void valuePayedForService(ServiceType database[], int numServiceTypes) {
@@ -240,9 +243,10 @@ void valuePayedForService(ServiceType database[], int numServiceTypes) {
         ServiceNodePointer current = database[i].completed;
         while (current != NULL) {
             if (current->service.id == serviceId) {
-                if(current->service.paidFor == 1) {
+                if (current->service.paidFor == 1) {
                     printf("You don't have to pay for this service, this service is already payed.\n");
-                } else{
+                }
+                else {
                     printf("Total price: %.2f\n Doyou want to pay? (1-yes, 0-noooo)\n", current->service.finalPrice);
                     int anwser;
                     scanf("%d", &anwser);
@@ -251,22 +255,21 @@ void valuePayedForService(ServiceType database[], int numServiceTypes) {
                         current->service.paidFor = 1;
                         current->service.paymentDate = time(NULL);
                         printf("Success in your payment! :D\n");
-                }
+                    }
                 }return;
-            
 
-        }
-        current = current->next;
+
+            }
+            current = current->next;
         }
     }
     printf("oh noo... i can't find the service\n");
 }
 
-    //----------------------------------------------- Utils
-    //------------------------------------------------
+//----------------------------------------------- Utils
 
-    // Cria numero aleatorio para ser o id do tipo de serviço
-    int createRandomTypeId(ServiceType database[], int numElements) {
+// Cria numero aleatorio para ser o id do tipo de serviço
+int createRandomTypeId(ServiceType database[], int numElements) {
     int generatingId = 1, id;
 
     if (numElements == 100) {
@@ -280,17 +283,17 @@ void valuePayedForService(ServiceType database[], int numServiceTypes) {
 
         for (int i = 0; i < numElements; i++) {
 
-        if (database[i].id == id) {
-            generatingId = 1;
-            break;
-        }
+            if (database[i].id == id) {
+                generatingId = 1;
+                break;
+            }
         }
 
     } while (generatingId);
     return id;
-    }
+}
 
-    int generateServiceId(ServiceType database[], int numServiceTypes) {
+int generateServiceId(ServiceType database[], int numServiceTypes) {
     int generatingId = 1, id;
     ServiceNodePointer auxNode;
 
@@ -300,92 +303,82 @@ void valuePayedForService(ServiceType database[], int numServiceTypes) {
 
         for (int i = 0; i < numServiceTypes && !generatingId; i++) {
 
-        auxNode = database[i].running;
-        while (auxNode != NULL) {
-            if (auxNode->service.id == id) {
-            generatingId = 1;
-            break;
-            }
-            auxNode = auxNode->next;
-        }
-
-        if (!generatingId) {
-            auxNode = database[i].completed;
+            auxNode = database[i].running;
             while (auxNode != NULL) {
-            if (auxNode->service.id == id) {
-                generatingId = 1;
-                break;
+                if (auxNode->service.id == id) {
+                    generatingId = 1;
+                    break;
+                }
+                auxNode = auxNode->next;
             }
-            auxNode = auxNode->next;
+
+            if (!generatingId) {
+                auxNode = database[i].completed;
+                while (auxNode != NULL) {
+                    if (auxNode->service.id == id) {
+                        generatingId = 1;
+                        break;
+                    }
+                    auxNode = auxNode->next;
+                }
             }
-        }
         }
 
     } while (generatingId);
     return id;
-    }
+}
 
-    int serviceTypeExists(ServiceType database[], int numServiceTypes, int id) {
+int serviceTypeExists(ServiceType database[], int numServiceTypes, int id) {
     for (int i = 0; i < numServiceTypes; i++) {
         if (database[i].id == id) {
-        return i;
+            return i;
         }
     }
     return -1;
-    }
+}
 
-    // Para verificar se existem Tipos de Serviços
-    int serviceTypeFilled(int numServiceTypes) {
+// Para verificar se existem Tipos de Serviços
+int serviceTypeFilled(int numServiceTypes) {
     if (numServiceTypes == 0) {
         printf("No Services Types Available\n");
         return 0;
     }
+
     return 1;
+}
+
+void freeServiceList(ServiceNode* node) {
+    if (node == NULL) {
+        return;
     }
 
-    //----------------------------------------------- Listar Things and Coisas
-    //-----------------------------------------------
-    // Função para visualizar os dados de um tipo de serviço
-    void printServiceType(ServiceType servType) {
+    //recursividade!!!!!
+    freeServiceList(node->next);
+    free(node);
+}
+
+//----------------------------------------------- Listar Things and Coisas
+
+void printServiceType(ServiceType servType) {
 
     printf("[%.3d   %.9s  %.24s  %.2f  %d]", servType.id, servType.typeName,
-            servType.employee, servType.basePrice, servType.cancelled);
-    }
+        servType.employee, servType.basePrice, servType.cancelled);
+}
 
-    // Função para visualisar todos os tipos de serviços eseus dados
-    void printServiceTypeList(ServiceType database[], int numServiceTypes) {
+// Função para visualisar todos os tipos de serviços eseus dados
+void printServiceTypeList(ServiceType database[], int numServiceTypes) {
     if (serviceTypeFilled(numServiceTypes)) {
         printf("Code   Type     Employee     Price    Cancelled\n");
         for (int i = 0; i < numServiceTypes; i++) {
-        printServiceType(database[i]);
-        printf("\n");
+            printServiceType(database[i]);
+            printf("\n");
         }
     }
-    }
+}
 
-    //----------------------------------------------- Listas Ligadas
-    //-----------------------------------------------
-
-    int insertServiceRunning(ServiceType database[], int typeId, Service service) {
-    ServiceNode *newNode = malloc(sizeof(ServiceNode));
-
-    if (newNode == NULL) {
-        printf("No memory! :C\n");
-        return 0;
-    }
-
-    newNode->service = service;
-    newNode->next = database[typeId].running;
-    database[typeId].running = newNode;
-
-    printf("Service created!!\n");
-    return 1;
-    }
-
-    //----------------------------------------------- Funções
-    //----------------------------------------------- Adiciona um novo Tipo de
-    // Serviço
-    ServiceType addServiceType(int id) {
+//----------------------------------------------- Funções
+//Adiciona um novo Tipo de Serviço
+ServiceType addServiceType(int id) {
     ServiceType newServType;
 
     newServType.id = id;
@@ -408,9 +401,9 @@ void valuePayedForService(ServiceType database[], int numServiceTypes) {
     newServType.completed = NULL;
 
     return newServType;
-    }
+}
 
-    Service addService(int id) {
+Service addService(int id) {
     Service newService;
     time_t currentTime;
 
@@ -434,13 +427,61 @@ void valuePayedForService(ServiceType database[], int numServiceTypes) {
     newService.numComponents = 0;
 
     return newService;
+}
+
+int cancelServiceType(ServiceType database[], int numServiceTypes, int id) {
+    int typeIndex = serviceTypeExists(database, numServiceTypes, id);
+
+    if (typeIndex == -1) {
+        printf("Service Type Not Found.\n");
+        return 0;
     }
 
-    //----------------------------------------------- Menus
-    //----------------------------------------------- Menu para tratar dos tipos de
-    // serviço
-    int serviceTypeMenu(ServiceType database[], int numServiceTypes) {
-    int running = 1, option, id, verefyId, searchId;
+    if (database[typeIndex].cancelled) {
+        printf("This Type is already cancelled.\n");
+        return 0;
+    }
+
+    database[typeIndex].cancelled = 1;
+    printf("Service Type cancelled successfully! No new services of this type can be created.\n");
+    return 1;
+}
+
+int deleteServiceType(ServiceType database[], int numServiceTypes, int typeIndex) {
+
+    //liberta as duas listas ligadas associadas a este tipo de serviço
+    freeServiceList(database[typeIndex].running);
+    freeServiceList(database[typeIndex].completed);
+
+    //fecha o "buraco" deixado no array, deslocando os elementos seguintes uma posição para trás
+    for (int i = typeIndex; i < numServiceTypes - 1; i++) {
+        database[i] = database[i + 1];
+    }
+
+    printf("Service Type and all its services were deleted successfully.\n");
+    return numServiceTypes - 1;
+}
+
+int insertServiceRunning(ServiceType database[], int typeId, Service service) {
+    ServiceNode* newNode = malloc(sizeof(ServiceNode));
+
+    if (newNode == NULL) {
+        printf("No memory! :C\n");
+        return 0;
+    }
+
+    newNode->service = service;
+    newNode->next = database[typeId].running;
+    database[typeId].running = newNode;
+
+    printf("Service created!!\n");
+    return 1;
+}
+
+//----------------------------------------------- Menus
+//Menu para tratar dos tipos de serviço
+int serviceTypeMenu(ServiceType database[], int numServiceTypes) {
+    int running = 1, option, id, typeIndex, searchId;
     ServiceType servType;
     Component comp;
 
@@ -459,48 +500,74 @@ void valuePayedForService(ServiceType database[], int numServiceTypes) {
         switch (option) {
         case 1:
 
-        id = createRandomTypeId(database, numServiceTypes);
-        servType = addServiceType(id);
-        database[numServiceTypes] = servType;
-        numServiceTypes++;
-        break;
+            id = createRandomTypeId(database, numServiceTypes);
+            servType = addServiceType(id);
+            database[numServiceTypes] = servType;
+            numServiceTypes++;
+            break;
 
         case 2:
-        printServiceTypeList(database, numServiceTypes);
-        break;
+            printServiceTypeList(database, numServiceTypes);
+            break;
 
         case 3:
 
-        break;
+            break;
 
         case 4:
-        break;
+            printf("ID of the Service Type to delete:");
+            scanf("%d", &id);
+            fflush(stdin);
+
+            typeIndex = serviceTypeExists(database, numServiceTypes, id);
+            if (typeIndex == -1) {
+                printf("Service Type Not Found.\n");
+                break;
+            }
+
+            printf("Are you sure?(1-Yes / 0-No):");
+            scanf("%d", &option);
+            fflush(stdin);
+
+            if (option == 1) {
+                numServiceTypes = deleteServiceType(database, numServiceTypes, typeIndex);
+            }
+            else {
+                printf("Canceling Delete.\n");
+            }
+
+            break;
 
         case 5:
-        break;
+            printf("ID of the Service Type to cancel:");
+            scanf("%d", &id);
+            fflush(stdin);
+
+            cancelServiceType(database, numServiceTypes, id);
+            break;
+            break;
 
         case 0:
-        printf("\n");
-        return numServiceTypes;
+            printf("\n");
+            return numServiceTypes;
 
         default:
-        printf("Incorrect option. Try Again");
-        break;
+            printf("Incorrect option. Try Again");
+            break;
         }
     } while (running);
-    }
+}
 
-    // MENU de Servicos
-    int serviceMenu(ServiceType database[], int numServiceTypes) {
-    int running = 1, option, id, typeId, verefyId, searchId;
+// MENU de Servicos
+int serviceMenu(ServiceType database[], int numServiceTypes) {
+    int running = 1, option, id, typeId, typeIndex, searchId;
     Service serv;
     Component comp;
 
     do {
         printf("\nManage Services:\n");
         printf("1 - Register New Service \n");
-        printf("2 - List Services By Type \n"); // depois para passar para outro
-                                                // menu
+        printf("2 - List Services By Type \n");
         printf("3 - Finish Service \n");
         printf("4 - Delete Service \n");
         printf("5 - Add Component \n");
@@ -512,84 +579,88 @@ void valuePayedForService(ServiceType database[], int numServiceTypes) {
         scanf("%d", &option);
 
         switch (option) {
-        // CRIAR E METER NA LISTA LIGADA O SERVICO
+            // CRIAR E METER NA LISTA LIGADA O SERVICO
         case 1:
 
-        printf("ID of the type of Service:");
-        scanf("%d", &typeId);
-        fflush(stdin);
+            printf("ID of the type of Service:");
+            scanf("%d", &typeId);
+            fflush(stdin);
 
-        verefyId = serviceTypeExists(database, numServiceTypes, typeId);
-        if (verefyId == -1) {
-            printf("Service Type Not Found.\n");
+            typeIndex = serviceTypeExists(database, numServiceTypes, typeId);
+            if (typeIndex == -1) {
+                printf("Service Type Not Found.\n");
+                break;
+            }
+
+            if (database[typeIndex].cancelled) {
+                printf("This Service Type has been cancelled.\n");
+                break;
+            }
+
+            id = generateServiceId(database, numServiceTypes);
+            serv = addService(id);
+
+            if (!insertServiceRunning(database, typeIndex, serv)) {
+                printf("Failed to add service.\n");
+            }
+
             break;
-        }
-
-        if (database[verefyId].cancelled) {
-            printf("This Service Type has been cancelled.\n");
-            break;
-        }
-
-        id = generateServiceId(database, numServiceTypes);
-        serv = addService(id);
-
-        if (!insertServiceRunning(database, verefyId, serv)) {
-            printf("Failed to add service.\n");
-        }
-
-        break;
         case 2:
 
-        printf("ID of the type of Service:");
-        scanf("%d", &typeId);
-        fflush(stdin);
+            printf("ID of the type of Service:");
+            scanf("%d", &typeId);
+            fflush(stdin);
 
-        verefyId = serviceTypeExists(database, numServiceTypes, typeId);
-        if (verefyId == -1) {
-            printf("Service Type Not Found.\n");
+            typeIndex = serviceTypeExists(database, numServiceTypes, typeId);
+            if (typeIndex == -1) {
+                printf("Service Type Not Found.\n");
+                break;
+            }
+
+            if (database[typeIndex].cancelled) {
+                printf("This Service Type has been cancelled.\n");
+                break;
+            }
+
+            if (database[typeIndex].running == NULL) {
+                printf("No Repairs of this Type\n");
+            }
+            else {
+                listServicesRunning(database[typeIndex]);
+            }
             break;
-        }
-
-        if (database[verefyId].cancelled) {
-            printf("This Service Type has been cancelled.\n");
-            break;
-        }
-
-        if (database[verefyId].running == NULL) {
-            printf("No Repairs of this Type\n");
-        } else {
-            listServicesRunning(database[verefyId]);
-        }
-        break;
 
         case 3:
 
-        break;
+            break;
 
         case 4:
-        break;
+
+            break;
 
         case 5:
-        addComponent(database, numServiceTypes);
-        break;
+            addComponent(database, numServiceTypes);
+            break;
 
         case 6:
-        valuePayedForService(database, numServiceTypes);
-        break;
+            valuePayedForService(database, numServiceTypes);
+            break;
 
         case 0:
-        printf("\n");
-        return 0;
+            printf("\n");
+            return 0;
 
         default:
-        printf("Incorrect option. Try Again");
-        break;
+            printf("Incorrect option. Try Again");
+            break;
         }
     } while (running);
-    }
-    // não sei como lhe chamar ahhhhhhhh!!!!
-    int alinea3menu(ServiceType database[], int numServiceTypes) {
-    int running = 1, option, id, typeId, verefyId, searchId, price = 0;
+}
+
+// não sei como lhe chamar ahhhhhhhh!!!!
+int alinea3menu(ServiceType database[], int numServiceTypes) {
+    int running = 1, option, id, typeId, typeIndex, searchId;
+    float price = 0;
     Service serv;
     Component comp;
 
@@ -608,112 +679,117 @@ void valuePayedForService(ServiceType database[], int numServiceTypes) {
 
         switch (option) {
         case 1:
-        printf("ID of the type of Service:");
-        scanf("%d", &typeId);
-        fflush(stdin);
+            printf("ID of the type of Service:");
+            scanf("%d", &typeId);
+            fflush(stdin);
 
-        verefyId = serviceTypeExists(database, numServiceTypes, typeId);
-        if (verefyId == -1) {
-            printf("Service Type Not Found.\n");
+            typeIndex = serviceTypeExists(database, numServiceTypes, typeId);
+            if (typeIndex == -1) {
+                printf("Service Type Not Found.\n");
+                break;
+            }
+
+            if (database[typeIndex].running == NULL) {
+                printf("No Repairs of this Type\n");
+            }
+            else {
+                listServicesRunning(database[typeIndex]);
+            }
             break;
-        }
-
-        if (database[verefyId].running == NULL) {
-            printf("No Repairs of this Type\n");
-        } else {
-            listServicesRunning(database[verefyId]);
-        }
-        break;
 
         case 2:
-        printf("ID of the type of Service:");
-        scanf("%d", &typeId);
-        fflush(stdin);
+            printf("ID of the type of Service:");
+            scanf("%d", &typeId);
+            fflush(stdin);
 
-        verefyId = serviceTypeExists(database, numServiceTypes, typeId);
-        if (verefyId == -1) {
-            printf("Service Type Not Found.\n");
+            typeIndex = serviceTypeExists(database, numServiceTypes, typeId);
+            if (typeIndex == -1) {
+                printf("Service Type Not Found.\n");
+                break;
+            }
+
+            if (database[typeIndex].running == NULL) {
+                printf("No Repairs of this Type\n");
+            }
+            else {
+                printf("Number of ongoing services: %d\n", countServicesAtMoment(database[typeIndex]));
+
+            }
             break;
-        }
-
-        if (database[verefyId].running == NULL) {
-            printf("No Repairs of this Type\n");
-        } else {
-            printf("Number of ongoing services: %d\n", countServicesAtMoment(database[verefyId]));
-
-        }
-        break;
 
         case 3:
-        printf("ID of the type of Service:");
-        scanf("%d", &typeId);
-        fflush(stdin);
+            printf("ID of the type of Service:");
+            scanf("%d", &typeId);
+            fflush(stdin);
 
-        verefyId = serviceTypeExists(database, numServiceTypes, typeId);
-        if (verefyId == -1) {
-            printf("Service Type Not Found.\n");
+            typeIndex = serviceTypeExists(database, numServiceTypes, typeId);
+            if (typeIndex == -1) {
+                printf("Service Type Not Found.\n");
+                break;
+            }
+
+            if (database[typeIndex].completed == NULL) {
+                printf("No Repairs of this Type\n");
+            }
+            else {
+                listFinishedServices(database[typeIndex]);
+            }
             break;
-        }
-
-        if (database[verefyId].completed == NULL) {
-            printf("No Repairs of this Type\n");
-        } else {
-            listFinishedServices(database[verefyId]);
-        }
-        break;
 
         case 4:
 
-        printf("ID of the type of Service:");
-        scanf("%d", &typeId);
-        fflush(stdin);
+            printf("ID of the type of Service:");
+            scanf("%d", &typeId);
+            fflush(stdin);
 
-        verefyId = serviceTypeExists(database, numServiceTypes, typeId);
-        if (verefyId == -1) {
-            printf("Service Type Not Found.\n");
+            typeIndex = serviceTypeExists(database, numServiceTypes, typeId);
+            if (typeIndex == -1) {
+                printf("Service Type Not Found.\n");
+                break;
+            }
+
+            if (database[typeIndex].completed == NULL) {
+                printf("No Repairs of this Type\n");
+            }
+            else {
+                price = averagePrice(database[typeIndex]);
+                printf("%.2f", price);
+            }
             break;
-        }
-
-        if (database[verefyId].completed == NULL) {
-            printf("No Repairs of this Type\n");
-        } else {
-            price = averagePrice(database[verefyId]);
-            printf("%.2f", price);
-        }
-        break;
 
         case 5:
-        printf("ID of the type of Service:");
-        scanf("%d", &typeId);
-        fflush(stdin);
+            printf("ID of the type of Service:");
+            scanf("%d", &typeId);
+            fflush(stdin);
 
-        verefyId = serviceTypeExists(database, numServiceTypes, typeId);
-        if (verefyId == -1) {
-            printf("Service Type Not Found.\n");
+            typeIndex = serviceTypeExists(database, numServiceTypes, typeId);
+            if (typeIndex == -1) {
+                printf("Service Type Not Found.\n");
+                break;
+            }
+
+            if (database[typeIndex].completed == NULL) {
+                printf("No Repairs of this Type\n");
+            }
+            else {
+                durationOfOneService(database[typeIndex]);
+            }
             break;
-        }
-
-        if (database[verefyId].completed == NULL) {
-            printf("No Repairs of this Type\n");
-        } else {
-            durationOfOneService(database[verefyId]);
-        }
-        break;
 
         case 0:
-        printf("\n");
-        return 0;
+            printf("\n");
+            return 0;
 
         default:
-        printf("Incorrect option. Try Again");
-        break;
+            printf("Incorrect option. Try Again");
+            break;
         }
     } while (running);
-    }
+}
 
-    //----------------------------------------------- Main
-    //----------------------------------------------- main cycle do coiso
-    int main() {
+//----------------------------------------------- Main
+//main cycle do coiso
+int main() {
 
     int option, running = 1;
 
@@ -738,47 +814,44 @@ void valuePayedForService(ServiceType database[], int numServiceTypes) {
 
         switch (option) {
         case 1:
-        numServiceTypes = serviceTypeMenu(database, numServiceTypes);
-        break;
+            numServiceTypes = serviceTypeMenu(database, numServiceTypes);
+            break;
 
         case 2:
-        serviceMenu(database, numServiceTypes);
-        break;
+            serviceMenu(database, numServiceTypes);
+            break;
 
         case 3:
-        // alinea3
-        // new menu
-        alinea3menu(database, numServiceTypes);
-
-        break;
+            alinea3menu(database, numServiceTypes);
+            break;
 
         case 4:
-        // alinea4
-        break;
+            // alinea4
+            break;
 
         case 5:
-        // alinea5
-        break;
+            // alinea5
+            break;
 
         case 6:
-        // alinea6
-        break;
+            // alinea6
+            break;
 
         case 7:
-        // alinea7
-        break;
+            // alinea7
+            break;
 
         case 0:
-        printf("Turning APP off\n");
-        printf("Saving Session Data to Bin");
-        /*             writeFiles(prices, database, numServices); */
-        return 0;
+            printf("Turning APP off\n");
+            printf("Saving Session Data to Bin");
+            /*             writeFiles(prices, database, numServices); */
+            return 0;
 
         default:
-        printf("Incorrect option. Try Again!!");
-        break;
+            printf("Incorrect option. Try Again!!");
+            break;
         }
     } while (running);
 
     return 0;
-    }
+}
