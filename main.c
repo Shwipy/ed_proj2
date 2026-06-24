@@ -267,6 +267,53 @@ void valuePayedForService(ServiceType database[], int numServiceTypes) {
     printf("oh noo... i can't find the service\n");
 }
 
+//Requisito 7 com bubble sort
+void sortServicesRunning(ServiceType database[], int numServiceTypes) {
+    for (int i = 0; i < numServiceTypes - 1; i++) {
+        for (int j = i + 1; j < numServiceTypes - 1; j++) {
+            if (countServicesAtMoment(database[i]) < countServicesAtMoment(database[j])) {
+                ServiceType temp = database[i];
+                database[i] = database[j];
+                database[j] = temp;
+            }
+
+        }
+    }
+}
+
+//Requisito 4
+void sortServicesCompletedByValue(ServiceType database[], int numServiceTypes) {
+    for (int i = 0; i < numServiceTypes; i++) {
+        ServiceNodePointer current = database[i].completed;
+        while (current != NULL) {
+            ServiceNodePointer j = current->next;
+            while (j != NULL) {
+                if (current->service.finalPrice > j->service.finalPrice) {
+                    Service temp = current->service;
+                    current->service = j->service;
+                    j->service = temp;
+                }
+                j = j->next;
+            }
+            current = current->next;
+        }
+    }
+}
+
+//Requisito 6
+void listCancelServices(ServiceType database[], int numServiceTypes) {
+    for (int i = 0; i < numServiceTypes; i++) {
+        if (database[i].cancelled == 1) {
+            int totalServices = countServicesAtMoment(database[i]);
+            ServiceNodePointer current = database[i].completed;
+            while (current != NULL) {
+                totalServices++;
+                current = current->next;
+            }
+            printf("Cancelled Services\n Total Services: %d\n", totalServices);
+        }
+    }
+}
 //----------------------------------------------- Utils
 
 // Cria numero aleatorio para ser o id do tipo de serviço
@@ -827,19 +874,20 @@ int main() {
             break;
 
         case 4:
-            // alinea4
+            sortServicesCompletedByValue(database, numServiceTypes);
             break;
 
         case 5:
-            // alinea5
+            durationOfALLServices(database, numServiceTypes);
             break;
 
         case 6:
-            // alinea6
+            listCancelServices(database, numServiceTypes);
             break;
 
         case 7:
-            // alinea7
+            sortServicesRunning(database, numServiceTypes);
+            printServiceTypeList(database, numServiceTypes);
             break;
 
         case 0:
