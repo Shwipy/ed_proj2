@@ -569,6 +569,29 @@ void finishService(ServiceType database[], int typeIndex, int serviceId) {
     }
 }
 
+void deleteService(ServiceType database[], int typeIndex, int serviceId) {
+    ServiceNodePointer auxCurrentNode = database[typeIndex].running;
+    ServiceNodePointer auxPreviousNode = NULL;
+
+    while (auxCurrentNode != NULL) {
+        if (auxCurrentNode->service.id == serviceId) {
+
+            if (auxPreviousNode == NULL) {
+                database[typeIndex].running = auxCurrentNode->next;
+            }
+            else {
+                auxPreviousNode->next = auxCurrentNode->next;
+            }
+
+            free(auxCurrentNode);
+            printf("Service deleted!!\n");
+            return;
+        }
+        auxPreviousNode = auxCurrentNode;
+        auxCurrentNode = auxCurrentNode->next;
+    }
+}
+
 //----------------------------------------------- Menus
 //Menu para tratar dos tipos de serviço
 int serviceTypeMenu(ServiceType database[], int numServiceTypes) {
@@ -736,8 +759,21 @@ int serviceMenu(ServiceType database[], int numServiceTypes) {
             break;
 
         case 4:
+            printf("ID of the Service to Delete:");
+            scanf("%d", &id);
+            fflush(stdin);
 
+            //só fiz para se o servico tiver na em 'running' pq se não tinha de fazer  outra função
+            //para ver ser ele estava na lista competed e já não tenho cabeça..
+            typeIndex = serviceExists(database, numServiceTypes, id);
+
+            if (typeIndex == -1) {
+                printf("Service Not Found or completed.\n");
+                break;
+            }
+            deleteService(database, typeIndex, id);
             break;
+
 
         case 5:
             addComponent(database, numServiceTypes);
@@ -899,7 +935,7 @@ int main() {
 
     do {
         printf("Menu:\n");
-        // É preciso mudar esta merda todaaaaa ;-;
+
         printf("1 - Manage Service Types\n");
         printf("2 - Manage Services\n");
         printf("3 - Manage Service by Type\n");
@@ -945,7 +981,7 @@ int main() {
 
         case 0:
             printf("Turning APP off\n");
-            printf("Saving Session Data to Bin");
+            printf("Saving Session Data to Bin(ou não...)");
             /*             writeFiles(prices, database, numServices); */
             return 0;
 
