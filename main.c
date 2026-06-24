@@ -47,45 +47,45 @@ typedef struct {
 // Requisito 3b
 int countServicesAtMoment(ServiceType st) {
     int count = 0;
-    ServiceNodePointer current = st.running;
-    while (current != NULL) {
+    ServiceNodePointer auxCurrentNode = st.running;
+    while (auxCurrentNode != NULL) {
         count++;
-        current = current->next;
+        auxCurrentNode = auxCurrentNode->next;
     }
     return count;
 }
 
 // Requisito 3a
 void listServicesRunning(ServiceType st) {
-    ServiceNodePointer current = st.running;
-    while (current != NULL) {
+    ServiceNodePointer auxCurrentNode = st.running;
+    while (auxCurrentNode != NULL) {
         time_t dateNow = time(NULL);
-        time_t dateStart = current->service.startDateTimestamp;
+        time_t dateStart = auxCurrentNode->service.startDateTimestamp;
         double runTime = difftime(dateNow, dateStart);
-        printf("Services running\n ID: %d\n Client: %s\n Equipment: %s\n Time running: %.2f\n", current->service.id, current->service.client, current->service.equipment, runTime);
-        current = current->next;
+        printf("Services running\n ID: %d\n Client: %s\n Equipment: %s\n Time running: %.2f\n", auxCurrentNode->service.id, auxCurrentNode->service.client, auxCurrentNode->service.equipment, runTime);
+        auxCurrentNode = auxCurrentNode->next;
     }
 }
 
 // Requisito 3c
 void listFinishedServices(ServiceType st) {
-    ServiceNodePointer current = st.completed;
-    while (current != NULL) {
+    ServiceNodePointer auxCurrentNode = st.completed;
+    while (auxCurrentNode != NULL) {
         printf("Services completed\n ID: %d\n Client: %s\n Equipment: %s\n",
-            current->service.id, current->service.client,
-            current->service.equipment);
-        current = current->next;
+            auxCurrentNode->service.id, auxCurrentNode->service.client,
+            auxCurrentNode->service.equipment);
+        auxCurrentNode = auxCurrentNode->next;
     }
 }
 // Requisito 3d
 float averagePrice(ServiceType st) {
-    ServiceNodePointer current = st.completed;
+    ServiceNodePointer auxCurrentNode = st.completed;
     float sum = 0;
     int countServices = 0;
-    while (current != NULL) {
-        sum += current->service.finalPrice;
+    while (auxCurrentNode != NULL) {
+        sum += auxCurrentNode->service.finalPrice;
         countServices++;
-        current = current->next;
+        auxCurrentNode = auxCurrentNode->next;
     }
     if (countServices == 0)
         return 0;
@@ -95,8 +95,8 @@ float averagePrice(ServiceType st) {
 
 // Requisito 3e
 void durationOfOneService(ServiceType st) {
-    ServiceNodePointer current = st.completed;
-    if (current == NULL) {
+    ServiceNodePointer auxCurrentNode = st.completed;
+    if (auxCurrentNode == NULL) {
         printf("Dont have completed services.\n");
     }
     else {
@@ -107,17 +107,15 @@ void durationOfOneService(ServiceType st) {
         double avarage;
         int count = 1;
 
-        duration = difftime(current->service.endDateTimestamp,
-            current->service.startDateTimestamp);
+        duration = difftime(auxCurrentNode->service.endDateTimestamp, auxCurrentNode->service.startDateTimestamp);
         min = duration;
         max = duration;
         sum = duration;
 
-        current = current->next;
+        auxCurrentNode = auxCurrentNode->next;
 
-        while (current != NULL) {
-            duration = difftime(current->service.endDateTimestamp,
-                current->service.startDateTimestamp);
+        while (auxCurrentNode != NULL) {
+            duration = difftime(auxCurrentNode->service.endDateTimestamp, auxCurrentNode->service.startDateTimestamp);
 
             if (duration < min) {
                 min = duration;
@@ -127,7 +125,7 @@ void durationOfOneService(ServiceType st) {
             }
             sum += duration;
             count++;
-            current = current->next;
+            auxCurrentNode = auxCurrentNode->next;
         }
         avarage = sum / count;
         printf("The duration of services is:\n The minimum is: %.2f\n The maximum "
@@ -137,7 +135,7 @@ void durationOfOneService(ServiceType st) {
 }
 // Requisito 5
 void durationOfALLServices(ServiceType database[], int numServiceTypes) {
-    ServiceNodePointer current;
+    ServiceNodePointer auxCurrentNode;
     int i;
     double duration;
     double min;
@@ -148,11 +146,11 @@ void durationOfALLServices(ServiceType database[], int numServiceTypes) {
     int firstService = 1; // ainda nao encontrei nenhum servico
 
     for (i = 0; i < numServiceTypes; i++) {
-        current = database[i].completed;
+        auxCurrentNode = database[i].completed;
 
-        while (current != NULL) {
-            duration = difftime(current->service.endDateTimestamp,
-                current->service.startDateTimestamp);
+        while (auxCurrentNode != NULL) {
+            duration = difftime(auxCurrentNode->service.endDateTimestamp,
+                auxCurrentNode->service.startDateTimestamp);
             if (firstService == 1) {
                 min = duration;
                 max = duration;
@@ -170,7 +168,7 @@ void durationOfALLServices(ServiceType database[], int numServiceTypes) {
                 sum += duration;
                 count++;
             }
-            current = current->next;
+            auxCurrentNode = auxCurrentNode->next;
         }
     }
     if (firstService == 1) {
@@ -200,11 +198,11 @@ void addComponent(ServiceType database[], int numServiceTypes) {
     }
     fflush(stdin);
     for (int i = 0; i < numServiceTypes; i++) {
-        ServiceNodePointer current = database[i].running;
-        while (current != NULL) {
-            if (current->service.id == serviceId) {
+        ServiceNodePointer auxCurrentNode = database[i].running;
+        while (auxCurrentNode != NULL) {
+            if (auxCurrentNode->service.id == serviceId) {
                 existService = 1;
-                if (current->service.numComponents >= 15) {
+                if (auxCurrentNode->service.numComponents >= 15) {
                     printf("ohh noo.. max of components :(");
                     return;
                 }
@@ -217,15 +215,15 @@ void addComponent(ServiceType database[], int numServiceTypes) {
                 fflush(stdin);
 
                 // para guardar no sitio certinho!!
-                current->service.components[current->service.numComponents] =
+                auxCurrentNode->service.components[auxCurrentNode->service.numComponents] =
                     newComponent;
-                current->service.numComponents++;
+                auxCurrentNode->service.numComponents++;
 
-                current->service.finalPrice += newComponent.compPrice;
-                printf("The new prioce is: %.2f \n", current->service.finalPrice);
+                auxCurrentNode->service.finalPrice += newComponent.compPrice;
+                printf("The new prioce is: %.2f \n", auxCurrentNode->service.finalPrice);
                 return;
             }
-            current = current->next;
+            auxCurrentNode = auxCurrentNode->next;
         }
     }
     if (existService == 0) {
@@ -241,27 +239,27 @@ void valuePayedForService(ServiceType database[], int numServiceTypes) {
     fflush(stdin);
 
     for (int i = 0; i < numServiceTypes; i++) {
-        ServiceNodePointer current = database[i].completed;
-        while (current != NULL) {
-            if (current->service.id == serviceId) {
-                if (current->service.paidFor == 1) {
-                    printf("You don't have to pay for this service, this service is already payed.\n");
+        ServiceNodePointer auxCurrentNode = database[i].completed;
+        while (auxCurrentNode != NULL) {
+            if (auxCurrentNode->service.id == serviceId) {
+                if (auxCurrentNode->service.paidFor == 1) {
+                    printf("Already paid for.\n");
                 }
                 else {
-                    printf("Total price: %.2f\n Doyou want to pay? (1-yes, 0-noooo)\n", current->service.finalPrice);
+                    printf("Total price: %.2f\n Doyou want to pay? (1-yes, 0-noooo)\n", auxCurrentNode->service.finalPrice);
                     int anwser;
                     scanf("%d", &anwser);
                     fflush(stdin);
                     if (anwser == 1) {
-                        current->service.paidFor = 1;
-                        current->service.paymentDate = time(NULL);
+                        auxCurrentNode->service.paidFor = 1;
+                        auxCurrentNode->service.paymentDate = time(NULL);
                         printf("Success in your payment! :D\n");
                     }
                 }return;
 
 
             }
-            current = current->next;
+            auxCurrentNode = auxCurrentNode->next;
         }
     }
     printf("oh noo... i can't find the service\n");
@@ -284,18 +282,18 @@ void sortServicesRunning(ServiceType database[], int numServiceTypes) {
 //Requisito 4
 void sortServicesCompletedByValue(ServiceType database[], int numServiceTypes) {
     for (int i = 0; i < numServiceTypes; i++) {
-        ServiceNodePointer current = database[i].completed;
-        while (current != NULL) {
-            ServiceNodePointer j = current->next;
+        ServiceNodePointer auxCurrentNode = database[i].completed;
+        while (auxCurrentNode != NULL) {
+            ServiceNodePointer j = auxCurrentNode->next;
             while (j != NULL) {
-                if (current->service.finalPrice > j->service.finalPrice) {
-                    Service temp = current->service;
-                    current->service = j->service;
+                if (auxCurrentNode->service.finalPrice > j->service.finalPrice) {
+                    Service temp = auxCurrentNode->service;
+                    auxCurrentNode->service = j->service;
                     j->service = temp;
                 }
                 j = j->next;
             }
-            current = current->next;
+            auxCurrentNode = auxCurrentNode->next;
         }
     }
 }
@@ -305,10 +303,10 @@ void listCancelServices(ServiceType database[], int numServiceTypes) {
     for (int i = 0; i < numServiceTypes; i++) {
         if (database[i].cancelled == 1) {
             int totalServices = countServicesAtMoment(database[i]);
-            ServiceNodePointer current = database[i].completed;
-            while (current != NULL) {
+            ServiceNodePointer auxCurrentNode = database[i].completed;
+            while (auxCurrentNode != NULL) {
                 totalServices++;
-                current = current->next;
+                auxCurrentNode = auxCurrentNode->next;
             }
             printf("Cancelled Services\n Total Services: %d\n", totalServices);
         }
@@ -343,7 +341,7 @@ int createRandomTypeId(ServiceType database[], int numElements) {
 
 int generateServiceId(ServiceType database[], int numServiceTypes) {
     int generatingId = 1, id;
-    ServiceNodePointer auxNode;
+    ServiceNodePointer auxCurrentNode;
 
     do {
         generatingId = 0;
@@ -351,23 +349,23 @@ int generateServiceId(ServiceType database[], int numServiceTypes) {
 
         for (int i = 0; i < numServiceTypes && !generatingId; i++) {
 
-            auxNode = database[i].running;
-            while (auxNode != NULL) {
-                if (auxNode->service.id == id) {
+            auxCurrentNode = database[i].running;
+            while (auxCurrentNode != NULL) {
+                if (auxCurrentNode->service.id == id) {
                     generatingId = 1;
                     break;
                 }
-                auxNode = auxNode->next;
+                auxCurrentNode = auxCurrentNode->next;
             }
 
             if (!generatingId) {
-                auxNode = database[i].completed;
-                while (auxNode != NULL) {
-                    if (auxNode->service.id == id) {
+                auxCurrentNode = database[i].completed;
+                while (auxCurrentNode != NULL) {
+                    if (auxCurrentNode->service.id == id) {
                         generatingId = 1;
                         break;
                     }
-                    auxNode = auxNode->next;
+                    auxCurrentNode = auxCurrentNode->next;
                 }
             }
         }
@@ -376,10 +374,25 @@ int generateServiceId(ServiceType database[], int numServiceTypes) {
     return id;
 }
 
+//verificar se o tipo existe
 int serviceTypeExists(ServiceType database[], int numServiceTypes, int id) {
     for (int i = 0; i < numServiceTypes; i++) {
         if (database[i].id == id) {
             return i;
+        }
+    }
+    return -1;
+}
+
+//verificar se o servico em si existe
+int serviceExists(ServiceType database[], int numServiceTypes, int id) {
+    for (int i = 0; i < numServiceTypes; i++) {
+        ServiceNodePointer auxCurrentNode = database[i].running;
+        while (auxCurrentNode != NULL) {
+            if (auxCurrentNode->service.id == id) {
+                return i;
+            }
+            auxCurrentNode = auxCurrentNode->next;
         }
     }
     return -1;
@@ -395,6 +408,7 @@ int serviceTypeFilled(int numServiceTypes) {
     return 1;
 }
 
+//Limpa um node
 void freeServiceList(ServiceNode* node) {
     if (node == NULL) {
         return;
@@ -451,6 +465,7 @@ ServiceType addServiceType(int id) {
     return newServType;
 }
 
+//Adiciona um novo Servico
 Service addService(int id) {
     Service newService;
     time_t currentTime;
@@ -477,6 +492,7 @@ Service addService(int id) {
     return newService;
 }
 
+//Muda um tipo de servico para cancelado
 int cancelServiceType(ServiceType database[], int numServiceTypes, int id) {
     int typeIndex = serviceTypeExists(database, numServiceTypes, id);
 
@@ -491,25 +507,25 @@ int cancelServiceType(ServiceType database[], int numServiceTypes, int id) {
     }
 
     database[typeIndex].cancelled = 1;
-    printf("Service Type cancelled successfully! No new services of this type can be created.\n");
+    printf("Type was cancelled.\n");
     return 1;
 }
 
+//Apaga um tipo se servico e todos os seus nodes da lista (com recursividade)
 int deleteServiceType(ServiceType database[], int numServiceTypes, int typeIndex) {
 
-    //liberta as duas listas ligadas associadas a este tipo de serviço
     freeServiceList(database[typeIndex].running);
     freeServiceList(database[typeIndex].completed);
 
-    //fecha o "buraco" deixado no array, deslocando os elementos seguintes uma posição para trás
     for (int i = typeIndex; i < numServiceTypes - 1; i++) {
         database[i] = database[i + 1];
     }
 
-    printf("Service Type and all its services were deleted successfully.\n");
+    printf("Deleted Everything!!.\n");
     return numServiceTypes - 1;
 }
 
+//Adiciona um servico a lista running
 int insertServiceRunning(ServiceType database[], int typeId, Service service) {
     ServiceNode* newNode = malloc(sizeof(ServiceNode));
 
@@ -524,6 +540,33 @@ int insertServiceRunning(ServiceType database[], int typeId, Service service) {
 
     printf("Service created!!\n");
     return 1;
+}
+
+void finishService(ServiceType database[], int typeIndex, int serviceId) {
+    ServiceNodePointer auxCurrentNode = database[typeIndex].running;
+    ServiceNodePointer auxPreviousNode = NULL;
+
+    while (auxCurrentNode != NULL) {
+        if (auxCurrentNode->service.id == serviceId) {
+
+            auxCurrentNode->service.endDateTimestamp = time(NULL);
+
+            if (auxPreviousNode == NULL) {
+                database[typeIndex].running = auxCurrentNode->next;
+            }
+            else {
+                auxPreviousNode->next = auxCurrentNode->next;
+            }
+
+            auxCurrentNode->next = database[typeIndex].completed;
+            database[typeIndex].completed = auxCurrentNode;
+
+            printf("Service concluded!!\n");
+            return;
+        }
+        auxPreviousNode = auxCurrentNode;
+        auxCurrentNode = auxCurrentNode->next;
+    }
 }
 
 //----------------------------------------------- Menus
@@ -555,11 +598,12 @@ int serviceTypeMenu(ServiceType database[], int numServiceTypes) {
             break;
 
         case 2:
+            //Para verificar se os tipos foram criados
             printServiceTypeList(database, numServiceTypes);
             break;
 
         case 3:
-
+            //1b ficou por fazer ;-;
             break;
 
         case 4:
@@ -592,7 +636,6 @@ int serviceTypeMenu(ServiceType database[], int numServiceTypes) {
             fflush(stdin);
 
             cancelServiceType(database, numServiceTypes, id);
-            break;
             break;
 
         case 0:
@@ -679,7 +722,17 @@ int serviceMenu(ServiceType database[], int numServiceTypes) {
             break;
 
         case 3:
+            printf("ID of the Service to finish:");
+            scanf("%d", &id);
+            fflush(stdin);
 
+            typeIndex = serviceExists(database, numServiceTypes, id);
+            if (typeIndex == -1) {
+                printf("Service Not Found.\n");
+                break;
+            }
+
+            finishService(database, typeIndex, id);
             break;
 
         case 4:
