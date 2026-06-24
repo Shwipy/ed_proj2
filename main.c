@@ -268,7 +268,7 @@ void valuePayedForService(ServiceType database[], int numServiceTypes) {
 //Requisito 7 com bubble sort
 void sortServicesRunning(ServiceType database[], int numServiceTypes) {
     for (int i = 0; i < numServiceTypes - 1; i++) {
-        for (int j = i + 1; j < numServiceTypes - 1; j++) {
+        for (int j = i + 1; j < numServiceTypes; j++) {
             if (countServicesAtMoment(database[i]) < countServicesAtMoment(database[j])) {
                 ServiceType temp = database[i];
                 database[i] = database[j];
@@ -308,6 +308,7 @@ void listCancelServices(ServiceType database[], int numServiceTypes) {
                 totalServices++;
                 auxCurrentNode = auxCurrentNode->next;
             }
+            printf("Service Type ID: %d | Name: %s\n", database[i].id, database[i].typeName);
             printf("Cancelled Services\n Total Services: %d\n", totalServices);
         }
     }
@@ -964,7 +965,17 @@ int main() {
 
         case 4:
             sortServicesCompletedByValue(database, numServiceTypes);
+            for (int i = 0; i < numServiceTypes; i++) {
+                if (database[i].completed == NULL) {
+                    printf("No Repairs of this Type\n");
+                }
+                else {
+                    printf("ID of the type of Service: %d\n", database[i].id);
+                    listFinishedServices(database[i]);
+                }
+            }
             break;
+
 
         case 5:
             durationOfALLServices(database, numServiceTypes);
